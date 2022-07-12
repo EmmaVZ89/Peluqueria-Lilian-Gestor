@@ -2,6 +2,10 @@ const URL = "http://localhost:8000/";
 
 VerificarSesionIniciada();
 
+let animateX = document.querySelectorAll(".animated-scroll-right");
+animateX[0].style.opacity = 1;
+animateX[0].classList.add("view-from-right");
+
 $("#btn-iniciar").on("click", (e) => {
   e.preventDefault();
   let nombreUsuario = $("#nombreUsuario").val();
@@ -20,17 +24,17 @@ $("#btn-iniciar").on("click", (e) => {
       if (obj_ret.exito) {
         //GUARDO EN EL LOCALSTORAGE
         localStorage.setItem("jwt", obj_ret.jwt);
-        swal("!Sesión Iniciada!", "Redirigiendo...", "success");
+        swal("¡ Sesión Iniciada !", "Redirigiendo...", "success");
         setTimeout(() => {
           $(location).attr("href", URL + "inicio");
         }, 2000);
       } else {
-        swal("!Inicio Fallido!", obj_ret.mensaje, "error");
+        swal("¡ Inicio Fallido !", obj_ret.mensaje, "error");
       }
     })
     .fail(function (jqXHR, textStatus, errorThrown) {
       let respuesta = JSON.parse(jqXHR.responseText);
-      swal("!Inicio Fallido!", respuesta.mensaje, "error");
+      swal("¡ Inicio Fallido !", respuesta.mensaje, "error");
     });
 });
 
@@ -46,7 +50,7 @@ function VerificarSesionIniciada() {
   })
     .done(function (obj_rta) {
       if (obj_rta.exito) {
-        swal("!Sesión Iniciada!", "Redirigiendo...", "success");
+        swal("¡ Sesión Iniciada !", "Redirigiendo...", "success");
         setTimeout(() => {
           $(location).attr("href", URL + "inicio");
         }, 1000);
