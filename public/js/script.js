@@ -638,7 +638,7 @@ function VerificarJWT() {
       } else {
         swal("¡ Inicio Fallido !", "Debes iniciar sesión para continuar", "error");
         setTimeout(() => {
-          $(location).attr("href", URL);
+          $(location).attr("href", URL); 
         }, 1000);
       }
     })

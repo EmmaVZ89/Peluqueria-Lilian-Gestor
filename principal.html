@@ -64,7 +64,6 @@
         </div>
       </section>
 
-
       <div class="container contenedor-buscador animated-scroll-right">
         <h4 class="titulo-buscador">Buscador</h4>
         <div class="form-floating mb-3 input-form-buscar">
@@ -164,222 +163,93 @@
         aria-hidden="true"
         aria-labelledby="modalTitle"
       >
-        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
           <div class="modal-content" id="contenedor-modal">
             <div class="modal-header">
               <h5 class="modal-title" id="modalTitle">Agregar Nuevo Cliente</h5>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-              <form>
-                <fieldset class="container">
+              <form class="">
+                <fieldset class="container form-contenedor">
                   <legend>Datos Personales</legend>
 
-                  <div class="form-floating mb-3 input-form">
-                    <input
-                      class="form-control"
-                      type="text"
-                      id="txtNumeroCliente"
-                      name="numeroCliente"
-                      placeholder="N° de Cliente"
-                      required
-                    />
-                    <label class="" for="txtNumeroCliente">N° de Cliente </label>
-                  </div>
+                  <div class="form-contenedor">
+                    <div class="form-floating mb-3 input-form">
+                      <input
+                        class="form-control"
+                        type="text"
+                        id="txtNombre"
+                        name="nombreCliente"
+                        placeholder="Nombre"
+                        required
+                      />
+                      <label class="" for="txtNombre">Nombre </label>
+                    </div>
 
-                  <div class="form-floating mb-3 input-form">
-                    <input
-                      class="form-control"
-                      type="text"
-                      id="txtNombre"
-                      name="nombre"
-                      placeholder="Nombre"
-                      required
-                    />
-                    <label for="txtNombre">Nombre </label>
-                  </div>
+                    <div class="form-floating mb-3 input-form">
+                      <input
+                        class="form-control"
+                        type="text"
+                        id="txtApellido"
+                        name="apellidoCliente"
+                        placeholder="Apellido"
+                        required
+                      />
+                      <label for="txtApellido">Apellido </label>
+                    </div>
 
-                  <div class="form-floating mb-3 input-form">
-                    <input class="form-control" type="text" id="txtDNI" name="dni" placeholder="DNI" />
-                    <label for="txtDNI">DNI </label>
-                  </div>
+                    <div class="form-floating mb-3 input-form">
+                      <input
+                        class="form-control"
+                        type="text"
+                        id="txtTelefono"
+                        name="telefono"
+                        placeholder="N° de Telefono"
+                        required
+                      />
+                      <label for="txtTelefono">N° de Telefono </label>
+                    </div>
 
-                  <div class="form-floating mb-3 input-form">
-                    <input class="form-control" type="number" id="txtEdad" name="edad" placeholder="Edad" />
-                    <label for="txtEdad">Edad </label>
-                  </div>
-
-                  <div class="form-floating mb-3 input-form">
-                    <input
-                      class="form-control"
-                      type="number"
-                      id="txtAltura"
-                      name="altura"
-                      step="0.01"
-                      placeholder="Altura"
-                    />
-                    <label for="txtAltura">Altura </label>
-                  </div>
-
-                  <div class="form-floating mb-3 input-form">
-                    <input
-                      class="form-control"
-                      type="text"
-                      id="txtTelefono"
-                      name="telefono"
-                      placeholder="Whatsapp"
-                      required
-                    />
-                    <label for="txtTelefono">N° de Telefono </label>
-                  </div>
-
-                  <div class="form-floating mb-3 input-form">
-                    <input
-                      class="form-control"
-                      type="text"
-                      id="txtFacebook"
-                      name="facebook"
-                      placeholder="Facebook"
-                    />
-                    <label for="txtFacebook">Facebook </label>
-                  </div>
-
-                  <div class="form-floating mb-3 input-form">
-                    <input
-                      class="form-control"
-                      type="text"
-                      id="txtInstagram"
-                      name="instagram"
-                      placeholder="Instagram"
-                    />
-                    <label for="txtInstagram">Instagram </label>
-                  </div>
-
-                  <div class="form-floating mb-3 input-form">
-                    <input
-                      class="form-control"
-                      type="text"
-                      id="txtDireccion"
-                      name="direccion"
-                      placeholder="Direccion"
-                    />
-                    <label for="txtDireccion">Dirección </label>
+                    <div class="mb-3 area-observaciones">
+                      <textarea
+                        class="form-control"
+                        id="txtArea"
+                        rows="3"
+                        placeholder="Observaciones"
+                      ></textarea>
+                    </div>
                   </div>
                 </fieldset>
 
-                <fieldset class="container">
-                  <legend>Controles</legend>
+                <fieldset class="container form-contenedor">
+                  <legend>Fichas</legend>
 
-                  <div class="form-floating mb-3 input-form">
-                    <input
-                      class="form-control"
-                      type="date"
-                      id="txtFecha"
-                      name="fecha"
-                      value=""
-                      placeholder="fecha"
-                      required
-                    />
-                    <label for="txtFecha">Fecha </label>
-                  </div>
+                  <div class="form-contenedor">
+                    <div class="form-floating mb-3 input-form">
+                      <input
+                        class="form-control"
+                        type="date"
+                        id="txtFecha"
+                        name="fecha"
+                        value=""
+                        placeholder="fecha"
+                        required
+                      />
+                      <label for="txtFecha">Fecha </label>
+                    </div>
 
-                  <div class="form-floating mb-3 input-form">
-                    <input
-                      class="form-control"
-                      type="number"
-                      id="txtPeso"
-                      name="peso"
-                      step="0.1"
-                      placeholder="Peso"
-                    />
-                    <label for="txtPeso">Peso </label>
-                  </div>
-
-                  <div class="form-floating mb-3 input-form">
-                    <input
-                      class="form-control"
-                      type="number"
-                      id="txtPecho"
-                      name="pecho"
-                      step="0.1"
-                      placeholder="Pecho"
-                    />
-                    <label for="txtPecho">Pecho </label>
-                  </div>
-
-                  <div class="form-floating mb-3 input-form">
-                    <input
-                      class="form-control"
-                      type="number"
-                      id="txtCintura"
-                      name="cintura"
-                      step="0.1"
-                      placeholder="Cintura"
-                    />
-                    <label for="txtCintura">Cintura </label>
-                  </div>
-
-                  <div class="form-floating mb-3 input-form">
-                    <input
-                      class="form-control"
-                      type="number"
-                      id="txtOmbligo"
-                      name="ombligo"
-                      step="0.1"
-                      placeholder="Ombligo"
-                    />
-                    <label for="txtOmbligo">Ombligo </label>
-                  </div>
-
-                  <div class="form-floating mb-3 input-form">
-                    <input
-                      class="form-control"
-                      type="number"
-                      id="txtCadera"
-                      name="cadera"
-                      step="0.1"
-                      placeholder="Cadera"
-                    />
-                    <label for="txtCadera">Cadera </label>
-                  </div>
-
-                  <div class="form-floating mb-3 input-form">
-                    <input
-                      class="form-control"
-                      type="number"
-                      id="txtBiceps"
-                      name="biceps"
-                      step="0.1"
-                      placeholder="Biceps"
-                    />
-                    <label for="txtBiceps">Biceps </label>
-                  </div>
-
-                  <div class="form-floating mb-3 input-form">
-                    <input
-                      class="form-control"
-                      type="number"
-                      id="txtMuslo"
-                      name="muslo"
-                      step="0.1"
-                      placeholder="Muslos"
-                    />
-                    <label for="txtMuslo">Muslos </label>
-                  </div>
-
-                  <div class="form-floating mb-3 input-form">
-                    <input
-                      class="form-control"
-                      type="number"
-                      id="txtObjetivoIMC"
-                      name="objetivo"
-                      step="0.1"
-                      placeholder="Objetivo IMC"
-                    />
-                    <label for="txtObjetivoIMC">Objetivo IMC </label>
+                    <div class="mb-3 area-observaciones">
+                      <textarea
+                        class="form-control"
+                        id="txtDetalle"
+                        rows="5"
+                        placeholder="Detalle de servicio"
+                      ></textarea>
+                    </div>
                   </div>
                 </fieldset>
-                <div class="modal-footer">
+                <div class="modal-footer botones-form-crud">
                   <button id="btn-form" type="submit" class="btn btn-primary">Guardar</button>
                   <button id="btn-form-cancel" type="button" class="btn btn-secondary">Cancelar</button>
                 </div>
@@ -397,10 +267,10 @@
         data-bs-backdrop="static"
         aria-labelledby="modalTitle"
       >
-        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
           <div class="modal-content bg-modal-control">
             <div class="modal-header">
-              <h5 class="modal-title">Menu de Controles</h5>
+              <h5 class="modal-title">Menu de Fichas</h5>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -414,7 +284,7 @@
                       data-bs-toggle="dropdown"
                       aria-expanded="false"
                     >
-                      Controles
+                      Fichas
                     </button>
                     <ul
                       id="listaControles"
@@ -424,7 +294,7 @@
                   </div>
                 </div>
 
-                <div class="container">
+                <div class="container form-contenedor">
                   <div class="form-floating mb-3 input-form">
                     <input
                       class="form-control"
@@ -448,9 +318,22 @@
                     />
                     <label for="txtNombre">Nombre </label>
                   </div>
+
+                  <div class="form-floating mb-3 input-form">
+                    <input
+                      class="form-control"
+                      type="text"
+                      name="apellido"
+                      placeholder="Apellido"
+                      required
+                      disabled
+                    />
+                    <label for="txtApellido">Apellido </label>
+                  </div>
+
                 </div>
 
-                <div class="container">
+                <div class="container form-contenedor">
                   <div class="form-floating mb-3 input-form">
                     <input
                       class="form-control"
@@ -463,81 +346,24 @@
                     <label for="txtFecha">Fecha </label>
                   </div>
 
-                  <div class="form-floating mb-3 input-form">
-                    <input class="form-control" type="number" name="peso" step="0.1" placeholder="Peso" />
-                    <label for="txtPeso">Peso </label>
-                  </div>
 
-                  <div class="form-floating mb-3 input-form">
-                    <input class="form-control" type="number" name="pecho" step="0.1" placeholder="Pecho" />
-                    <label for="txtPecho">Pecho </label>
-                  </div>
-
-                  <div class="form-floating mb-3 input-form">
-                    <input
+                  <div class="mb-3 area-observaciones">
+                    <textarea
                       class="form-control"
-                      type="number"
-                      name="cintura"
-                      step="0.1"
-                      placeholder="Cintura"
-                    />
-                    <label for="txtCintura">Cintura </label>
+                      id="txtDetalleFicha"
+                      name="detalle"
+                      rows="5"
+                      placeholder="Detalle de servicio"
+                    ></textarea>
                   </div>
-
-                  <div class="form-floating mb-3 input-form">
-                    <input
-                      class="form-control"
-                      type="number"
-                      name="ombligo"
-                      step="0.1"
-                      placeholder="Ombligo"
-                    />
-                    <label for="txtOmbligo">Ombligo </label>
-                  </div>
-
-                  <div class="form-floating mb-3 input-form">
-                    <input class="form-control" type="number" name="cadera" step="0.1" placeholder="Cadera" />
-                    <label for="txtCadera">Cadera </label>
-                  </div>
-
-                  <div class="form-floating mb-3 input-form">
-                    <input class="form-control" type="number" name="biceps" step="0.1" placeholder="Biceps" />
-                    <label for="txtBiceps">Biceps </label>
-                  </div>
-
-                  <div class="form-floating mb-3 input-form">
-                    <input
-                      class="form-control"
-                      type="number"
-                      name="muslo"
-                      step="0.1"
-                      placeholder="Muslos"
-                      disabled
-                    />
-                    <label for="txtMuslo">Muslos </label>
-                  </div>
-
-                  <div class="form-floating mb-3 input-form">
-                    <input
-                      class="form-control"
-                      type="number"
-                      name="objetivo"
-                      step="0.1"
-                      placeholder="Objetivo IMC"
-                    />
-                    <label for="txtObjetivoIMC">Objetivo IMC </label>
-                  </div>
-                  <div id="alert-mensaje"></div>
+                
                 </div>
-                <!-- <div id="alert-mensaje"></div> -->
-                <div class="modal-footer d-flex justify-content-between">
-                  <div>
-                    <button id="btn-controles-progreso" type="button" class="btn btn-info">
-                      Ver Progreso
-                    </button>
+                
+                <div class="modal-footer botones-crud-fichas">
+                  <div style="display: none;">
+                    <a id="btn-controles-progreso" type="button" class="btn btn-info">                    </a>
                   </div>
 
-                  <div>
                     <button id="btn-controles-agregar" type="submit" class="btn btn-primary">Agregar</button>
 
                     <button id="btn-controles-modificar" type="submit" class="btn btn-success">
@@ -548,7 +374,6 @@
                     <button id="btn-controles-cancel" type="button" class="btn btn-secondary">
                       Cancelar
                     </button>
-                  </div>
                 </div>
               </form>
             </div>
