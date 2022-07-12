@@ -1,40 +1,21 @@
 class Cliente {
-  constructor(id, id_control, nombre, dni, edad, altura, telefono, facebook, instagram, direccion, control, estado) {
+  constructor(id, id_ficha, nombre, apellido, telefono, observacion, ficha) {
     this.id = id;
-    this.id_control = id_control;
+    this.id_ficha = id_ficha;
     this.nombre = nombre;
-    this.dni = dni;
-    this.edad = edad;
-    this.altura = altura;
+    this.apellido = apellido;
     this.telefono = telefono;
-    this.facebook = facebook;
-    this.instagram = instagram;
-    this.direccion = direccion;
-    this.control = control;
-    this.estado = estado;
-  }
-}
-
-class Control {
-  constructor(id, fecha, peso, pecho, cintura, ombligo, cadera, biceps, muslos, objetivo) {
-    this.id = id;
-    this.fecha = fecha;
-    this.peso = peso;
-    this.pecho = pecho;
-    this.cintura = cintura;
-    this.ombligo = ombligo;
-    this.cadera = cadera;
-    this.biceps = biceps;
-    this.muslos = muslos;
-    this.objetivo = objetivo;
+    this.observacion = observacion;
+    this.ficha = ficha;
   }
 }
 
 class Ficha {
-  constructor(id, cliente, control) {
+  constructor(id, fecha, detalle) {
     this.id = id;
-    this.cliente = cliente;
-    this.control.push(control);
+    this.fecha = fecha;
+    this.detalle = detalle;
   }
 }
-export { Cliente, Control, Ficha };
+
+export { Cliente, Ficha};

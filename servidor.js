@@ -2,7 +2,7 @@ const express = require("express");
 
 const app = express();
 
-const path = require('path');
+const path = require("path");
 
 // app.set("puerto", 2022);
 var port = process.env.PORT || 8000;
@@ -60,7 +60,7 @@ const db_options = {
   port: 3306,
   user: "root",
   password: "",
-  database: "clientes_bd",
+  database: "clientes_lilian_bd",
 };
 app.use(myconn(mysql, db_options, "single"));
 
@@ -73,7 +73,7 @@ const verificar_jwt = express.Router();
 verificar_usuario.use((request, response, next) => {
   let usuario = {};
   usuario.nombre = request.body.nombreUsuario;
-  usuario.clave = request.body.clave; 
+  usuario.clave = request.body.clave;
   request.getConnection((err, conn) => {
     if (err) throw "Error al conectarse a la base de datos.";
     conn.query(
@@ -196,56 +196,39 @@ app.post("/agregarCliente", (request, response) => {
   let obj_respuesta = {
     exito: false,
     mensaje: "No se pudo agregar el cliente",
+    id_nuevo: null,
     status: 418,
   };
 
   let cliente_json = {};
-  cliente_json.id = request.body.id;
   cliente_json.nombre = request.body.nombre;
-  cliente_json.dni = request.body.dni;
-  cliente_json.edad = request.body.edad;
-  cliente_json.altura = request.body.altura;
+  cliente_json.apellido = request.body.apellido;
   cliente_json.telefono = request.body.telefono;
-  cliente_json.facebook = request.body.facebook;
-  cliente_json.instagram = request.body.instagram;
-  cliente_json.direccion = request.body.direccion;
-  cliente_json.id_control = request.body.id;
-  cliente_json.estado = request.body.estado;
-
-  let control = request.body.control[0];
-  control.id = cliente_json.id;
+  cliente_json.observacion = request.body.observacion;
 
   request.getConnection((err, conn) => {
     if (err) throw "Error al conectarse a la base de datos.";
-    conn.query("INSERT INTO clientes set ?", [cliente_json], (err, rows) => {
+    conn.query("INSERT INTO clientes SET ?", [cliente_json], (err, rows) => {
       if (err) {
         console.log(err);
         throw "Error en consulta de base de datos.";
+      } else {
+        obj_respuesta.id_nuevo = rows.insertId;
+        obj_respuesta.exito = true;
+        obj_respuesta.mensaje = "Cliente agregado!";
+        obj_respuesta.status = 200;
+        response.status(obj_respuesta.status).json(obj_respuesta);
       }
-    });
-  });
-
-  request.getConnection((err, conn) => {
-    if (err) throw "Error al conectarse a la base de datos.";
-    conn.query("INSERT INTO controles set ?", [control], (err, rows) => {
-      if (err) {
-        console.log(err);
-        throw "Error en consulta de base de datos.";
-      }
-      obj_respuesta.exito = true;
-      obj_respuesta.mensaje = "Cliente agregado!";
-      obj_respuesta.status = 200;
-      response.status(obj_respuesta.status).json(obj_respuesta);
     });
   });
 });
 
 // Listar clientes
-app.get("/listarClientes",(request, response) => {
+app.get("/listarClientes", (request, response) => {
   let obj_respuesta = {
     exito: false,
     mensaje: "No se encontraron clientes",
-    dato: {},
+    dato: [],
     payload: null,
     status: 424,
   };
@@ -257,7 +240,7 @@ app.get("/listarClientes",(request, response) => {
     conn.query("SELECT * FROM clientes", (err, rows) => {
       if (err) throw "Error en consulta de base de datos.";
       if (rows.length == 0) {
-        response.status(obj_respuesta.status).json(obj_respuesta);
+        response.status(200).json(obj_respuesta);
       } else {
         obj_respuesta.exito = true;
         obj_respuesta.mensaje = "Clientes encontrados!";
@@ -280,23 +263,18 @@ app.post("/modificarCliente", (request, response) => {
 
   let cliente_json = {};
   cliente_json.id = request.body.id;
+  cliente_json.id_ficha = request.body.id_ficha;
   cliente_json.nombre = request.body.nombre;
-  cliente_json.dni = request.body.dni;
-  cliente_json.edad = request.body.edad;
-  cliente_json.altura = request.body.altura;
+  cliente_json.apellido = request.body.apellido;
   cliente_json.telefono = request.body.telefono;
-  cliente_json.facebook = request.body.facebook;
-  cliente_json.instagram = request.body.instagram;
-  cliente_json.direccion = request.body.direccion;
-  cliente_json.id_control = request.body.id;
-  cliente_json.estado = request.body.estado;
+  cliente_json.observacion = request.body.observacion;
 
-  let control = request.body.control;
+  let fichas = request.body.ficha;
 
-  control.forEach((c) => {
+  fichas.forEach((item) => {
     request.getConnection((err, conn) => {
       if (err) throw "Error al conectarse a la base de datos.";
-      conn.query("UPDATE controles SET ? WHERE id = ? AND fecha = ?", [c, c.id, c.fecha], (err, rows) => {
+      conn.query("UPDATE fichas SET ? WHERE id = ? AND fecha = ?", [item, item.id, item.fecha], (err, rows) => {
         if (err) {
           console.log(err);
           throw "Error en consulta de base de datos.";
@@ -343,7 +321,7 @@ app.post("/eliminarCliente", (request, response) => {
 
   request.getConnection((err, conn) => {
     if (err) throw "Error al conectarse a la base de datos.";
-    conn.query("DELETE FROM controles WHERE id = ?", [cliente_json.id], (err, rows) => {
+    conn.query("DELETE FROM fichas WHERE id = ?", [cliente_json.id], (err, rows) => {
       if (err) {
         console.log(err);
         throw "Error en consulta de base de datos.";
@@ -356,63 +334,56 @@ app.post("/eliminarCliente", (request, response) => {
   });
 });
 
-// CRUD CONTROLES **************************************************************************************
-// Agregar control
-app.post("/agregarControl", (request, response) => {
+// CRUD FICHAS **************************************************************************************
+// Agregar ficha
+app.post("/agregarFicha", (request, response) => {
   let obj_respuesta = {
     exito: false,
-    mensaje: "No se pudo agregar el control",
+    mensaje: "No se pudo agregar la ficha",
     status: 418,
   };
 
-  let control_json = {};
-  control_json.id = request.body.id;
-  control_json.fecha = request.body.fecha;
-  control_json.peso = request.body.peso;
-  control_json.pecho = request.body.pecho;
-  control_json.cintura = request.body.cintura;
-  control_json.ombligo = request.body.ombligo;
-  control_json.cadera = request.body.cadera;
-  control_json.biceps = request.body.biceps;
-  control_json.muslos = request.body.muslos;
-  control_json.objetivo = request.body.objetivo;
+  let ficha_json = {};
+  ficha_json.id = request.body.id;
+  ficha_json.fecha = request.body.fecha;
+  ficha_json.detalle = request.body.detalle;
 
   request.getConnection((err, conn) => {
     if (err) throw "Error al conectarse a la base de datos.";
-    conn.query("INSERT INTO controles set ?", [control_json], (err, rows) => {
+    conn.query("INSERT INTO fichas set ?", [ficha_json], (err, rows) => {
       if (err) {
         console.log(err);
         throw "Error en consulta de base de datos.";
       }
       obj_respuesta.exito = true;
-      obj_respuesta.mensaje = "Control agregado!";
+      obj_respuesta.mensaje = "Ficha agregada!";
       obj_respuesta.status = 200;
       response.status(obj_respuesta.status).json(obj_respuesta);
     });
   });
 });
 
-// Listar Controles
-app.get("/listarControles", (request, response) => {
+// Listar Fichas
+app.get("/listarFichas", (request, response) => {
   let obj_respuesta = {
     exito: false,
-    mensaje: "No se encontraron controles",
-    dato: {},
+    mensaje: "No se encontraron fichas",
+    dato: [],
     status: 424,
   };
 
   request.getConnection((err, conn) => {
     if (err) throw "Error al conectarse a la base de datos.";
-    conn.query("SELECT * FROM controles", (err, rows) => {
+    conn.query("SELECT * FROM fichas", (err, rows) => {
       if (err) throw "Error en consulta de base de datos.";
       if (rows.length == 0) {
-        response.status(obj_respuesta.status).json(obj_respuesta);
+        response.status(200).json(obj_respuesta);
       } else {
         obj_respuesta.exito = true;
-        obj_respuesta.mensaje = "Controles encontrados!";
+        obj_respuesta.mensaje = "Fichas encontradas!";
         obj_respuesta.dato = rows;
         obj_respuesta.status = 200;
-        response.status(obj_respuesta.status).json(rows);
+        response.status(obj_respuesta.status).json(obj_respuesta);
       }
     });
   });

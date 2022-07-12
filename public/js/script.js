@@ -1,6 +1,11 @@
-import { Cliente, Control } from "./cliente.js";
+import { Cliente, Ficha } from "./cliente.js";
 import createTable from "./tabla.js";
-import { updateControlList, activateControlFields, desactivateControlFields, dateFormat } from "./listaControles.js";
+import {
+  updateControlList,
+  activateControlFields,
+  desactivateControlFields,
+  dateFormat,
+} from "./listaControles.js";
 
 const URL = "http://localhost:8000/";
 
@@ -13,7 +18,7 @@ VerificarJWT();
 const $divSpinner = document.getElementById("spinner");
 
 let listaClientes = await getClientes();
-let listaControles = await getControles();
+let listaFichas = await getControles();
 
 const $divTable = document.querySelector(".contenedorTabla");
 updateTable();
@@ -25,10 +30,9 @@ date.value = actualDate.toJSON().slice(0, 10);
 const $formularioCRUD = document.forms[0];
 const $formularioControl = document.forms[1];
 
-let controles = [];
+let fichas = [];
 const $ulControl = document.querySelector("#listaControles");
 const $btnControlCancel = document.querySelector("#btn-controles-cancel");
-const $btnControlProgreso = document.querySelector("#btn-controles-progreso");
 
 let cliente;
 const $tituloCrud = document.querySelector("#modalTitle");
@@ -80,55 +84,10 @@ $btnFormCancel.addEventListener("click", () => {
 
 $btnFicha.addEventListener("click", () => {
   resetFormControls();
-  if ($btnControlProgreso.classList.contains("btn-dark")) {
-    $btnControlProgreso.classList.replace("btn-dark", "btn-info");
-  }
   document.querySelector("#dropdownMenuButton1").disabled = false;
   document.querySelector("#btn-controles-modificar").disabled = true;
   document.querySelector("#btn-controles-eliminar").disabled = true;
   $("#modalControles").modal("show");
-});
-
-$btnControlProgreso.addEventListener("click", () => {
-  resetFormControls();
-  if (document.querySelector("#dropdownMenuButton1").disabled === false) {
-    const { fecha, peso, pecho, cintura, ombligo, cadera, biceps, muslo, objetivo } = $formularioControl;
-    document.querySelector("#dropdownMenuButton1").disabled = true;
-    document.querySelector("#btn-controles-agregar").disabled = true;
-
-    fecha.value = actualDate.toJSON().slice(0, 10);
-    peso.value = (cliente.control[cliente.control.length - 1].peso - cliente.control[0].peso).toFixed(3);
-    pecho.value = (cliente.control[cliente.control.length - 1].pecho - cliente.control[0].pecho).toFixed(2);
-    cintura.value = (
-      cliente.control[cliente.control.length - 1].cintura - cliente.control[0].cintura
-    ).toFixed(2);
-    ombligo.value = (
-      cliente.control[cliente.control.length - 1].ombligo - cliente.control[0].ombligo
-    ).toFixed(2);
-    cadera.value = (cliente.control[cliente.control.length - 1].cadera - cliente.control[0].cadera).toFixed(
-      2
-    );
-    biceps.value = (cliente.control[cliente.control.length - 1].biceps - cliente.control[0].biceps).toFixed(
-      2
-    );
-    muslo.value = (cliente.control[cliente.control.length - 1].muslos - cliente.control[0].muslos).toFixed(2);
-    objetivo.value = (
-      cliente.control[cliente.control.length - 1].objetivo - cliente.control[0].objetivo
-    ).toFixed(2);
-
-    $btnControlProgreso.textContent = "Dejar de ver";
-    $btnControlProgreso.classList.toggle("btn-info");
-    $btnControlProgreso.classList.toggle("btn-dark");
-    changeColors();
-    desactivateControlFields();
-  } else {
-    document.querySelector("#dropdownMenuButton1").disabled = false;
-    $btnControlProgreso.textContent = "Ver Progreso";
-    $btnControlProgreso.classList.toggle("btn-info");
-    $btnControlProgreso.classList.toggle("btn-dark");
-    resetColors();
-    resetFormControls();
-  }
 });
 
 $btnControlCancel.addEventListener("click", () => {
@@ -137,150 +96,71 @@ $btnControlCancel.addEventListener("click", () => {
 // EVENTOS BOTONES -----------------------------------------------------------------------------------
 
 // EVENTOS PANTALLA Y FORMULARIOS --------------------------------------------------------------------
-let flagDesactivar = false;
 window.addEventListener("click", (e) => {
   if (e.target.matches("td")) {
-    flagDesactivar = false;
     $btnModificar.disabled = false;
     $btnDelete.disabled = false;
     $btnFicha.disabled = false;
     let id = e.target.parentElement.dataset.id;
     cliente = listaClientes.find((c) => c.id.toString() === id);
-    controles = listaControles.filter((control) => {
-      return control.id == cliente.id;
+    fichas = listaFichas.filter((ficha) => {
+      return ficha.id == cliente.id;
     });
-    cliente.control = controles;
+    cliente.ficha = fichas;
     uploadFormCRUD(cliente);
     uploadFormControl(cliente);
     swal("¡ Ficha cargada !", `Se cargo a ${cliente.nombre} con exito`, "success");
   }
-
-  if (e.target.matches("button")) {
-    let id = e.target.dataset.id;
-    let index = listaClientes.findIndex((c) => c.id == id);
-    if (index != -1) {
-      activarDesactivarCliente(id);
-    }
-  }
 });
-
-function activarDesactivarCliente(id) {
-  cliente = listaClientes.find((c) => c.id.toString() === id);
-  let accion = "activar";
-  let mensaje = "activado";
-  if (cliente.estado) {
-    accion = "desactivar";
-    mensaje = "desactivado";
-  }
-  swal({
-    title: `¿Desea ${accion} el cliente?`,
-    text: `Una vez ${mensaje} es posible recuperarlo.`,
-    icon: "warning",
-    buttons: true,
-    dangerMode: true,
-  }).then((willDelete) => {
-    if (willDelete) {
-      controles = listaControles.filter((control) => {
-        return control.id == cliente.id;
-      });
-      cliente.control = controles;
-      if (cliente.estado) {
-        cliente.estado = 0;
-      } else {
-        cliente.estado = 1;
-      }
-      updateCliente(cliente);
-      swal(`! OK !`, `El cliente fue ${mensaje}`, "success");
-    } else {
-      swal("No se realizó ningún cambio!");
-    }
-  });
-}
 
 $formularioCRUD.addEventListener("submit", (e) => {
   e.preventDefault();
-  const {
-    numeroCliente,
-    nombre,
-    dni,
-    edad,
-    altura,
-    telefono,
-    facebook,
-    instagram,
-    direccion,
-    fecha,
-    peso,
-    pecho,
-    cintura,
-    ombligo,
-    cadera,
-    biceps,
-    muslo,
-    objetivo,
-  } = $formularioCRUD;
-
-  const control = new Control(
-    numeroCliente.value,
-    fecha.value,
-    peso.value,
-    pecho.value,
-    cintura.value,
-    ombligo.value,
-    cadera.value,
-    biceps.value,
-    muslo.value,
-    objetivo.value
-  );
+  const { nombre, apellido, telefono, observacion, fecha, detalle } = $formularioCRUD;
+  const ficha = new Ficha(0, fecha.value, detalle.value);
 
   if ($btnForm.innerHTML !== "Eliminar") {
     if ($btnForm.innerHTML === "Guardar") {
-      controles = [];
+      fichas = [];
     }
-    if (!controles.length) {
-      controles.push(control);
+    if (!fichas.length) {
+      fichas.push(ficha);
     } else {
-      controles.shift();
-      controles.unshift(control);
+      fichas.shift();
+      fichas.unshift(ficha);
     }
   }
 
   const clienteCRUD = new Cliente(
-    numeroCliente.value,
-    numeroCliente.value,
+    0,
+    0,
     nombre.value,
-    dni.value,
-    edad.value,
-    altura.value,
+    apellido.value,
     telefono.value,
-    facebook.value,
-    instagram.value,
-    direccion.value,
-    controles
+    observacion.value,
+    fichas
   );
 
-  if (!lookForClient(listaClientes, numeroCliente.value) && $btnForm.innerHTML === "Guardar") {
-    clienteCRUD.estado = 1;
-    listaControles.push(control);
-    createCliente(clienteCRUD);
+  if ($btnForm.innerHTML === "Guardar") {
+    createCliente(clienteCRUD, ficha);
+    listaFichas.push(ficha);
     swal("¡ Agregado !", `El cliente fue agregado`, "success");
   } else if ($btnForm.innerHTML === "Modificar") {
     swal({
-      title: `¿Desea modificar a ${clienteCRUD.nombre}?`,
+      title: `¿Desea modificar a ${cliente.nombre}?`,
       text: `Una vez modificado NO es posible recuperar la información.`,
       icon: "warning",
       buttons: true,
       dangerMode: true,
     }).then((willDelete) => {
       if (willDelete) {
-        if (!flagDesactivar) {
-          clienteCRUD.estado = 1;
-        }
+        clienteCRUD.id = cliente.id;
+        clienteCRUD.id_ficha = cliente.id_ficha;
+        clienteCRUD.ficha[0].id = cliente.id_ficha;
         let index = listaClientes.findIndex((c) => c.id == clienteCRUD.id);
-        let indexControl = listaControles.findIndex(
-          (c) => c.id == clienteCRUD.id && c.fecha == clienteCRUD.control[0].fecha
+        let indexFicha = listaFichas.findIndex(
+          (ficha) => ficha.id == clienteCRUD.id_ficha && ficha.fecha == clienteCRUD.ficha[0].fecha
         );
-        listaControles[indexControl] = clienteCRUD.control[0];
+        listaFichas[indexFicha] = clienteCRUD.ficha[0];
         listaClientes[index] = clienteCRUD;
         updateCliente(clienteCRUD);
         swal("¡ Modificado !", `El cliente fue modificado`, "success");
@@ -290,14 +170,14 @@ $formularioCRUD.addEventListener("submit", (e) => {
     });
   } else {
     swal({
-      title: `¿Desea eliminar a ${clienteCRUD.nombre}?`,
+      title: `¿Desea eliminar a ${cliente.nombre}?`,
       text: `Una vez eliminado NO es posible recuperar la información.`,
       icon: "warning",
       buttons: true,
       dangerMode: true,
     }).then((willDelete) => {
       if (willDelete) {
-        deleteCliente(parseInt($formularioCRUD.numeroCliente.value));
+        deleteCliente(cliente.id);
         swal("¡ Eliminado !", `El cliente fue eliminado`, "success");
       } else {
         swal("No se eliminó ningún cliente!");
@@ -305,70 +185,66 @@ $formularioCRUD.addEventListener("submit", (e) => {
     });
   }
   $("#miModal").modal("hide");
-  controles = [];
+  fichas = [];
 });
 
 $formularioControl.addEventListener("submit", (e) => {
   e.preventDefault();
-  const { fecha, peso, pecho, cintura, ombligo, cadera, biceps, muslo, objetivo } = $formularioControl;
+  const {fecha, detalle} = $formularioControl;
 
-  const control = new Control(
+  const ficha = new Ficha(
     cliente.id,
     fecha.value,
-    peso.value,
-    pecho.value,
-    cintura.value,
-    ombligo.value,
-    cadera.value,
-    biceps.value,
-    muslo.value,
-    objetivo.value
+    detalle.value,
   );
 
   let idSubmitter = e.submitter.id;
-  let index = cliente.control.findIndex((c) => c.fecha === fecha.value);
+  let index = cliente.ficha.findIndex((c) => c.fecha === fecha.value);
 
   if (idSubmitter === "btn-controles-agregar") {
-    let controlExist = listaControles.findIndex((c) => c.id == cliente.id && c.fecha == control.fecha);
-    console.log(controlExist);
-    if (controlExist !== -1) {
+    let fichaExist = listaFichas.findIndex((c) => c.id == cliente.id && c.fecha == ficha.fecha);
+    if (fichaExist !== -1) {
       swal(
-        "¡ Ya existe el control !",
-        "Verifica que la fecha sea distinta a un control ya existente.",
+        "¡ Ya existe la ficha !",
+        "Verifica que la fecha sea distinta a una ficha ya existente.",
         "error"
       );
     } else {
-      cliente.control.push(control);
-      listaControles.push(control);
-      createControl(control);
+      cliente.ficha.push(ficha);
+      listaFichas.push(ficha);
+      createFicha(ficha);
       resetFormControls();
       swal("¡ Agregado !", "El control fue agregado", "success");
     }
   } else if (idSubmitter === "btn-controles-modificar") {
     if (index !== -1) {
       swal({
-        title: `¿Seguro que quiere modificar el control del ${dateFormat(new Date(cliente.control[index].fecha + "T00:00:00"))}?`,
+        title: `¿Seguro que quiere modificar la ficha del ${dateFormat(
+          new Date(cliente.ficha[index].fecha + "T00:00:00")
+        )}?`,
         text: "Una vez modificado no es posible recuperar la información.",
         icon: "warning",
         buttons: true,
         dangerMode: true,
       }).then((willDelete) => {
         if (willDelete) {
-          let indexControl = listaControles.findIndex((c) => c.id == control.id && c.fecha == control.fecha);
-          listaControles[indexControl] = control;
-          cliente.control[index] = control;
+          let indexFicha = listaFichas.findIndex((c) => c.id == ficha.id && c.fecha == ficha.fecha);
+          listaFichas[indexFicha] = ficha;
+          cliente.ficha[index] = ficha;
           updateCliente(cliente);
           resetFormControls();
-          swal("¡ Modificado !", "El control fue modificado", "success");
+          swal("¡ Modificado !", "La ficha fue modificada", "success");
         } else {
-          swal("El control NO fue modificado!");
+          swal("¡La ficha NO fue modificada!");
         }
       });
     }
   } else if (idSubmitter === "btn-controles-eliminar") {
     if (index !== -1) {
       swal({
-        title: `¿Seguro que quiere eliminar el control del ${dateFormat(new Date(cliente.control[index].fecha + "T00:00:00"))}?`,
+        title: `¿Seguro que quiere eliminar el control del ${dateFormat(
+          new Date(cliente.control[index].fecha + "T00:00:00")
+        )}?`,
         text: "Una vez eliminado no es posible recuperarlo.",
         icon: "warning",
         buttons: true,
@@ -392,7 +268,7 @@ $formularioControl.addEventListener("submit", (e) => {
 
 $ulControl.addEventListener("click", (e) => {
   const date = e.target.dataset.date;
-  const control = cliente.control.find((c) => c.fecha === date);
+  const control = cliente.ficha.find((c) => c.fecha === date);
   document.querySelector("#btn-controles-agregar").disabled = true;
   document.querySelector("#btn-controles-modificar").disabled = false;
   document.querySelector("#btn-controles-eliminar").disabled = false;
@@ -414,10 +290,14 @@ async function getClientes() {
   }
 }
 
-async function createCliente(nuevoCliente) {
+async function createCliente(nuevoCliente, ficha) {
   try {
     const { data } = await axios.post(URL + "agregarCliente", nuevoCliente);
-    updateTable(listaClientes);
+    nuevoCliente.id = data.id_nuevo;
+    nuevoCliente.id_ficha = data.id_nuevo;
+    ficha.id = data.id_nuevo;
+    updateCliente(nuevoCliente);
+    createFicha(ficha);
     resetForm();
   } catch (error) {
     console.error(error);
@@ -448,9 +328,9 @@ async function deleteCliente(id) {
 // CRUD CLIENTE **************************************************************************************
 
 // CRUD CONTROL **************************************************************************************
-async function createControl(nuevoControl) {
+async function createFicha(nuevaFicha) {
   try {
-    const { data } = await axios.post(URL + "agregarControl", nuevoControl);
+    const { data } = await axios.post(URL + "agregarFicha", nuevaFicha);
   } catch (error) {
     console.error(error);
   }
@@ -459,8 +339,8 @@ async function createControl(nuevoControl) {
 async function getControles() {
   $divSpinner.appendChild(getSpinner());
   try {
-    const { data } = await axios.get(URL + "listarControles");
-    return data;
+    const { data } = await axios.get(URL + "listarFichas");
+    return data.dato;
   } catch (error) {
     console.error(error);
   } finally {
@@ -505,46 +385,15 @@ function resetForm() {
 }
 
 function uploadFormCRUD(cliente) {
-  const {
-    numeroCliente,
-    nombre,
-    dni,
-    edad,
-    altura,
-    telefono,
-    facebook,
-    instagram,
-    direccion,
-    fecha,
-    peso,
-    pecho,
-    cintura,
-    ombligo,
-    cadera,
-    biceps,
-    muslo,
-    objetivo,
-  } = $formularioCRUD;
+  const { nombre, apellido, telefono, observacion, fecha, detalle } = $formularioCRUD;
 
-  numeroCliente.value = cliente.id;
   nombre.value = cliente.nombre;
-  dni.value = cliente.dni;
-  edad.value = cliente.edad;
-  altura.value = cliente.altura;
+  apellido.value = cliente.apellido;
   telefono.value = cliente.telefono;
-  facebook.value = cliente.facebook;
-  instagram.value = cliente.instagram;
-  direccion.value = cliente.direccion;
-  if (cliente.control !== undefined) {
-    fecha.value = cliente.control[0].fecha;
-    peso.value = cliente.control[0].peso;
-    pecho.value = cliente.control[0].pecho;
-    cintura.value = cliente.control[0].cintura;
-    ombligo.value = cliente.control[0].ombligo;
-    cadera.value = cliente.control[0].cadera;
-    biceps.value = cliente.control[0].biceps;
-    muslo.value = cliente.control[0].muslos;
-    objetivo.value = cliente.control[0].objetivo;
+  observacion.value = cliente.observacion;
+  if (cliente.ficha !== undefined) {
+    fecha.value = cliente.ficha[0].fecha;
+    detalle.value = cliente.ficha[0].detalle;
   }
 }
 
@@ -555,47 +404,27 @@ function resetFormControls() {
   document.querySelector("#btn-controles-agregar").disabled = false;
   document.querySelector("#btn-controles-modificar").disabled = true;
   document.querySelector("#btn-controles-eliminar").disabled = true;
-  $btnControlProgreso.textContent = "Ver Progreso";
   activateControlFields();
   resetColors();
 }
-function uploadFormControl(cliente) {
-  const { numeroCliente, nombre, fecha } = $formularioControl;
 
-  numeroCliente.value = cliente.id;
+function uploadFormControl(cliente) {
+  const { nombre, apellido, fecha } = $formularioControl;
+
   nombre.value = cliente.nombre;
+  apellido.value = cliente.apellido;
   fecha.value = actualDate.toJSON().slice(0, 10);
 }
 
-function uploadControl(control) {
-  const { fecha, peso, pecho, cintura, ombligo, cadera, biceps, muslo, objetivo } = $formularioControl;
+function uploadControl(ficha) {
+  const {fecha, detalle} = $formularioControl;
 
-  fecha.value = control.fecha;
-  peso.value = control.peso;
-  pecho.value = control.pecho;
-  cintura.value = control.cintura;
-  ombligo.value = control.ombligo;
-  cadera.value = control.cadera;
-  biceps.value = control.biceps;
-  muslo.value = control.muslos;
-  objetivo.value = control.objetivo;
+  fecha.value = ficha.fecha;
+  detalle.value = ficha.detalle;
 }
 
 function lookForClient(clientes, id) {
   return clientes.some((el) => el.id === id);
-}
-
-function changeColors() {
-  const inputs = document.querySelectorAll("#form-controls input");
-  inputs.forEach((input) => {
-    if (input.name !== "numeroCliente" && input.name !== "nombre" && input.name !== "fecha") {
-      if (input.value < 0) {
-        input.setAttribute("style", "color: green; text-align: center; font-weight: bold");
-      } else {
-        input.setAttribute("style", "color: red; text-align: center; font-weight: bold");
-      }
-    }
-  });
 }
 
 function resetColors() {
@@ -638,7 +467,7 @@ function VerificarJWT() {
       } else {
         swal("¡ Inicio Fallido !", "Debes iniciar sesión para continuar", "error");
         setTimeout(() => {
-          $(location).attr("href", URL); 
+          $(location).attr("href", URL);
         }, 1000);
       }
     })

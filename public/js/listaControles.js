@@ -1,14 +1,14 @@
 const $ulControl = document.querySelector("#listaControles");
 
 function createControlList(cliente) {
-  for (let i = cliente.control.length - 1; i >= 0; i--) {
+  for (let i = cliente.ficha.length - 1; i >= 0; i--) {
     const $li = document.createElement("li");
     const $text = document.createTextNode(
-      dateFormat(new Date(cliente.control[i].fecha + "T00:00:00"))
+      dateFormat(new Date(cliente.ficha[i].fecha + "T00:00:00"))
     );
     $li.appendChild($text);
     $li.classList.add("dropdown-item", "li-control");
-    $li.setAttribute("data-date", cliente.control[i].fecha);
+    $li.setAttribute("data-date", cliente.ficha[i].fecha);
     $ulControl.appendChild($li);
   }
 }
@@ -23,7 +23,7 @@ function updateControlList(cliente) {
 function activateControlFields() {
   const inputs = document.querySelectorAll("#form-controls input");
   inputs.forEach((input) => {
-    if (input.name !== "numeroCliente" && input.name !== "nombre") {
+    if (input.name !== "apellido" && input.name !== "nombre") {
       input.disabled = false;
     }
   });
@@ -32,7 +32,7 @@ function activateControlFields() {
 function desactivateControlFields() {
   const inputs = document.querySelectorAll("#form-controls input");
   inputs.forEach((input) => {
-    if (input.name !== "numeroCliente" && input.name !== "nombre") {
+    if (input.name !== "apellido" && input.name !== "nombre") {
       input.disabled = true;
     }
   });

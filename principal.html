@@ -154,7 +154,7 @@
         </button>
       </div>
 
-      <!-- TODO EL FORM EN UN MODAL-->
+      <!-- MODAL DE CLIENTES-->
       <div
         class="modal fade"
         id="miModal"
@@ -180,7 +180,7 @@
                         class="form-control"
                         type="text"
                         id="txtNombre"
-                        name="nombreCliente"
+                        name="nombre"
                         placeholder="Nombre"
                         required
                       />
@@ -192,7 +192,7 @@
                         class="form-control"
                         type="text"
                         id="txtApellido"
-                        name="apellidoCliente"
+                        name="apellido"
                         placeholder="Apellido"
                         required
                       />
@@ -215,6 +215,7 @@
                       <textarea
                         class="form-control"
                         id="txtArea"
+                        name="observacion"
                         rows="3"
                         placeholder="Observaciones"
                       ></textarea>
@@ -235,6 +236,7 @@
                         value=""
                         placeholder="fecha"
                         required
+                        disabled
                       />
                       <label for="txtFecha">Fecha </label>
                     </div>
@@ -243,6 +245,7 @@
                       <textarea
                         class="form-control"
                         id="txtDetalle"
+                        name="detalle"
                         rows="5"
                         placeholder="Detalle de servicio"
                       ></textarea>
@@ -299,18 +302,6 @@
                     <input
                       class="form-control"
                       type="text"
-                      name="numeroCliente"
-                      placeholder="N° de Cliente"
-                      required
-                      disabled
-                    />
-                    <label class="" for="txtNumeroCliente">N° de Cliente </label>
-                  </div>
-
-                  <div class="form-floating mb-3 input-form">
-                    <input
-                      class="form-control"
-                      type="text"
                       name="nombre"
                       placeholder="Nombre"
                       required
@@ -330,7 +321,6 @@
                     />
                     <label for="txtApellido">Apellido </label>
                   </div>
-
                 </div>
 
                 <div class="container form-contenedor">
@@ -346,7 +336,6 @@
                     <label for="txtFecha">Fecha </label>
                   </div>
 
-
                   <div class="mb-3 area-observaciones">
                     <textarea
                       class="form-control"
@@ -356,24 +345,15 @@
                       placeholder="Detalle de servicio"
                     ></textarea>
                   </div>
-                
                 </div>
-                
+
                 <div class="modal-footer botones-crud-fichas">
-                  <div style="display: none;">
-                    <a id="btn-controles-progreso" type="button" class="btn btn-info">                    </a>
-                  </div>
-
-                    <button id="btn-controles-agregar" type="submit" class="btn btn-primary">Agregar</button>
-
-                    <button id="btn-controles-modificar" type="submit" class="btn btn-success">
-                      Modificar
-                    </button>
-
-                    <button id="btn-controles-eliminar" type="submit" class="btn btn-danger">Eliminar</button>
-                    <button id="btn-controles-cancel" type="button" class="btn btn-secondary">
-                      Cancelar
-                    </button>
+                  <button id="btn-controles-agregar" type="submit" class="btn btn-primary">Agregar</button>
+                  <button id="btn-controles-modificar" type="submit" class="btn btn-success">
+                    Modificar
+                  </button>
+                  <button id="btn-controles-eliminar" type="submit" class="btn btn-danger">Eliminar</button>
+                  <button id="btn-controles-cancel" type="button" class="btn btn-secondary">Cancelar</button>
                 </div>
               </form>
             </div>
