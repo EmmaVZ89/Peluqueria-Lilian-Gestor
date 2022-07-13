@@ -1,11 +1,6 @@
 import { Cliente, Ficha } from "./cliente.js";
 import createTable from "./tabla.js";
-import {
-  updateControlList,
-  activateControlFields,
-  desactivateControlFields,
-  dateFormat,
-} from "./listaControles.js";
+import { updateControlList, activateControlFields, dateFormat } from "./listaControles.js";
 
 const URL = "http://localhost:8000/";
 
@@ -18,7 +13,7 @@ VerificarJWT();
 const $divSpinner = document.getElementById("spinner");
 
 let listaClientes = await getClientes();
-let listaFichas = await getControles();
+let listaFichas = await getFichas();
 
 const $divTable = document.querySelector(".contenedorTabla");
 updateTable();
@@ -46,12 +41,38 @@ $btnModificar.disabled = true;
 $btnDelete.disabled = true;
 $btnFicha.disabled = true;
 
+// Buscador
+const $btnBuscar = document.querySelector("#btn-buscar");
+
 // Logout
 const $btnLogOut = document.querySelector("#btn-logout");
 $btnLogOut.addEventListener("click", () => {
   logOut();
 });
 // EVENTOS BOTONES -----------------------------------------------------------------------------------
+$btnBuscar.addEventListener("click", () => {
+  let nombreBusqueda = document.querySelector("#txtNombreBusqueda").value;
+  let apellidoBusqueda = document.querySelector("#txtApellidoBusqueda").value;
+  nombreBusqueda = nombreBusqueda.trim().toLowerCase();
+  apellidoBusqueda = apellidoBusqueda.trim().toLowerCase();
+  let arrayFiltrado = [];
+
+  if (nombreBusqueda !== "" && apellidoBusqueda !== "") {
+    arrayFiltrado = searchByNameAndLastName(listaClientes, nombreBusqueda, apellidoBusqueda);
+  } else if (apellidoBusqueda == "") {
+    arrayFiltrado = searchByName(listaClientes, nombreBusqueda);
+  } else if (nombreBusqueda == "") {
+    arrayFiltrado = searchByLastName(listaClientes, apellidoBusqueda);
+  }
+
+  if (arrayFiltrado.length == 0) {
+    swal("¡ No hallado !", `No se hallaron coincidencias.`, "error");
+  } else {
+    updateTableBuscador(arrayFiltrado);
+    swal("¡ Hallado !", `Se hallaron coincidencias.`, "success");
+  }
+});
+
 $btnCrear.addEventListener("click", () => {
   resetForm();
   if (!$btnForm.classList.contains("btn-primary")) {
@@ -190,13 +211,9 @@ $formularioCRUD.addEventListener("submit", (e) => {
 
 $formularioControl.addEventListener("submit", (e) => {
   e.preventDefault();
-  const {fecha, detalle} = $formularioControl;
+  const { fecha, detalle } = $formularioControl;
 
-  const ficha = new Ficha(
-    cliente.id,
-    fecha.value,
-    detalle.value,
-  );
+  const ficha = new Ficha(cliente.id, fecha.value, detalle.value);
 
   let idSubmitter = e.submitter.id;
   let index = cliente.ficha.findIndex((c) => c.fecha === fecha.value);
@@ -204,17 +221,13 @@ $formularioControl.addEventListener("submit", (e) => {
   if (idSubmitter === "btn-controles-agregar") {
     let fichaExist = listaFichas.findIndex((c) => c.id == cliente.id && c.fecha == ficha.fecha);
     if (fichaExist !== -1) {
-      swal(
-        "¡ Ya existe la ficha !",
-        "Verifica que la fecha sea distinta a una ficha ya existente.",
-        "error"
-      );
+      swal("¡ Ya existe la ficha !", "Verifica que la fecha sea distinta a una ficha ya existente.", "error");
     } else {
       cliente.ficha.push(ficha);
       listaFichas.push(ficha);
       createFicha(ficha);
       resetFormControls();
-      swal("¡ Agregado !", "El control fue agregado", "success");
+      swal("¡ Agregada !", "La ficha fue agregada", "success");
     }
   } else if (idSubmitter === "btn-controles-modificar") {
     if (index !== -1) {
@@ -233,7 +246,7 @@ $formularioControl.addEventListener("submit", (e) => {
           cliente.ficha[index] = ficha;
           updateCliente(cliente);
           resetFormControls();
-          swal("¡ Modificado !", "La ficha fue modificada", "success");
+          swal("¡ Modificada !", "La ficha fue modificada", "success");
         } else {
           swal("¡La ficha NO fue modificada!");
         }
@@ -242,24 +255,24 @@ $formularioControl.addEventListener("submit", (e) => {
   } else if (idSubmitter === "btn-controles-eliminar") {
     if (index !== -1) {
       swal({
-        title: `¿Seguro que quiere eliminar el control del ${dateFormat(
-          new Date(cliente.control[index].fecha + "T00:00:00")
+        title: `¿Seguro que quiere eliminar la ficha del ${dateFormat(
+          new Date(cliente.ficha[index].fecha + "T00:00:00")
         )}?`,
-        text: "Una vez eliminado no es posible recuperarlo.",
+        text: "Una vez eliminada no es posible recuperarla.",
         icon: "warning",
         buttons: true,
         dangerMode: true,
       }).then((willDelete) => {
         if (willDelete) {
-          let controlToDelete = cliente.control[index];
-          let indexControl = listaControles.findIndex((c) => c.id == control.id && c.fecha == control.fecha);
-          cliente.control.splice(index, 1);
-          listaControles.splice(indexControl, 1);
-          deleteControl(controlToDelete);
+          let fichaToDelete = cliente.ficha[index];
+          let indexFicha = listaFichas.findIndex((c) => c.id == ficha.id && c.fecha == ficha.fecha);
+          cliente.ficha.splice(index, 1);
+          listaFichas.splice(indexFicha, 1);
+          deleteFicha(fichaToDelete);
           resetFormControls();
-          swal("¡ Eliminado! ", "El control fue eliminado", "success");
+          swal("¡ Eliminada ! ", "La ficha fue eliminada", "success");
         } else {
-          swal("El control NO fue eliminado!");
+          swal("La ficha NO fue eliminada!");
         }
       });
     }
@@ -336,7 +349,7 @@ async function createFicha(nuevaFicha) {
   }
 }
 
-async function getControles() {
+async function getFichas() {
   $divSpinner.appendChild(getSpinner());
   try {
     const { data } = await axios.get(URL + "listarFichas");
@@ -348,9 +361,9 @@ async function getControles() {
   }
 }
 
-async function deleteControl(control) {
+async function deleteFicha(ficha) {
   try {
-    const { data } = await axios.post(URL + "eliminarControl", control);
+    const { data } = await axios.post(URL + "eliminarFicha", ficha);
   } catch (error) {
     console.error(error);
   }
@@ -417,7 +430,7 @@ function uploadFormControl(cliente) {
 }
 
 function uploadControl(ficha) {
-  const {fecha, detalle} = $formularioControl;
+  const { fecha, detalle } = $formularioControl;
 
   fecha.value = ficha.fecha;
   detalle.value = ficha.detalle;
@@ -488,6 +501,34 @@ function logOut() {
   setTimeout(() => {
     $(location).attr("href", URL);
   }, 2000);
+}
+
+// Buscador *************************************************************************
+function updateTableBuscador(listado) {
+  while ($divTable.hasChildNodes()) {
+    $divTable.removeChild($divTable.firstChild);
+  }
+  if (listado) {
+    $divTable.appendChild(createTable(listado));
+  }
+}
+
+function searchByName(listado, nombre) {
+  return listado.filter((cliente) => {
+    return cliente.nombre.toLowerCase() == nombre;
+  });
+}
+
+function searchByLastName(listado, apellido) {
+  return listado.filter((cliente) => {
+    return cliente.apellido.toLowerCase() == apellido;
+  });
+}
+
+function searchByNameAndLastName(listado, nombre, apellido) {
+  return listado.filter((cliente) => {
+    return cliente.nombre.toLowerCase() == nombre && cliente.apellido.toLowerCase() == apellido;
+  });
 }
 
 export { updateTable, resetForm };

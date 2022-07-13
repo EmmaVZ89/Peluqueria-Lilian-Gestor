@@ -4,7 +4,6 @@ const app = express();
 
 const path = require("path");
 
-// app.set("puerto", 2022);
 var port = process.env.PORT || 8000;
 
 // VISTAS
@@ -109,8 +108,8 @@ app.post("/login", verificar_usuario, (request, response, obj) => {
       perfil: user.perfil,
     },
     administrador: {
-      nombre: "Soledad",
-      apellido: "Quiroz",
+      nombre: "Peluqueria",
+      apellido: "Lilian",
     },
     app: "Gestor de Clientes",
   };
@@ -389,38 +388,31 @@ app.get("/listarFichas", (request, response) => {
   });
 });
 
-// Modificar control
-app.post("/modificarControl", (request, response) => {
+// Modificar ficha
+app.post("/modificarFicha", (request, response) => {
   let obj_respuesta = {
     exito: false,
-    mensaje: "No se pudo modificar el control",
+    mensaje: "No se pudo modificar la ficha",
     status: 418,
   };
 
-  let control_json = {};
-  control_json.id = request.body.id;
-  control_json.fecha = request.body.fecha;
-  control_json.peso = request.body.peso;
-  control_json.pecho = request.body.pecho;
-  control_json.cintura = request.body.cintura;
-  control_json.ombligo = request.body.ombligo;
-  control_json.cadera = request.body.cadera;
-  control_json.biceps = request.body.biceps;
-  control_json.muslos = request.body.muslos;
-  control_json.objetivo = request.body.objetivo;
+  let ficha_json = {};
+  ficha_json.id = request.body.id;
+  ficha_json.fecha = request.body.fecha;
+  ficha_json.detalle = request.body.detalle;
 
   request.getConnection((err, conn) => {
     if (err) throw "Error al conectarse a la base de datos.";
     conn.query(
-      "UPDATE controles SET ? WHERE id = ? AND fecha = ?",
-      [control_json.id, control_json.fecha],
+      "UPDATE fichas SET ? WHERE id = ? AND fecha = ?",
+      [ficha_json.id, ficha_json.fecha],
       (err, rows) => {
         if (err) {
           console.log(err);
           throw "Error en consulta de base de datos.";
         }
         obj_respuesta.exito = true;
-        obj_respuesta.mensaje = "Control modificado!";
+        obj_respuesta.mensaje = "Ficha modificada!";
         obj_respuesta.status = 200;
         response.status(obj_respuesta.status).json(obj_respuesta);
       }
@@ -429,37 +421,29 @@ app.post("/modificarControl", (request, response) => {
 });
 
 // Eliminar control
-app.post("/eliminarControl", (request, response) => {
+app.post("/eliminarFicha", (request, response) => {
   let obj_respuesta = {
     exito: false,
-    mensaje: "No se pudo eliminar el control",
+    mensaje: "No se pudo eliminar la ficha",
     status: 418,
   };
 
-  let control_json = {};
-  control_json.id = request.body.id;
-  control_json.fecha = request.body.fecha;
-  control_json.peso = request.body.peso;
-  control_json.pecho = request.body.pecho;
-  control_json.cintura = request.body.cintura;
-  control_json.ombligo = request.body.ombligo;
-  control_json.cadera = request.body.cadera;
-  control_json.biceps = request.body.biceps;
-  control_json.muslos = request.body.muslos;
-  control_json.objetivo = request.body.objetivo;
+  let ficha_json = {};
+  ficha_json.id = request.body.id;
+  ficha_json.fecha = request.body.fecha;
 
   request.getConnection((err, conn) => {
     if (err) throw "Error al conectarse a la base de datos.";
     conn.query(
-      "DELETE FROM controles WHERE id = ? AND fecha = ?",
-      [control_json.id, control_json.fecha],
+      "DELETE FROM fichas WHERE id = ? AND fecha = ?",
+      [ficha_json.id, ficha_json.fecha],
       (err, rows) => {
         if (err) {
           console.log(err);
           throw "Error en consulta de base de datos.";
         }
         obj_respuesta.exito = true;
-        obj_respuesta.mensaje = "Control eliminado!";
+        obj_respuesta.mensaje = "Ficha eliminada!";
         obj_respuesta.status = 200;
         response.status(obj_respuesta.status).json(obj_respuesta);
       }
