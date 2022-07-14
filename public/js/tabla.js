@@ -10,6 +10,7 @@ export default function createTable(array) {
   $table.appendChild(createTbody(array));
 
   $table.classList.add("table", "table-bordered");
+  $table.setAttribute("id", "tablaClientes");
   return $table;
 }
 
@@ -51,7 +52,19 @@ function createTbody(array) {
         if (key === "id") {
           $tr.setAttribute("data-id", element[key]);
         }
-        if (key === "nombre" || key === "apellido" || key === "telefono") {
+        if (key === "nombre" || key == "apellido") {
+          const $td = document.createElement("td");
+          let $text = "";
+          if (element[key] == "") {
+            $text = document.createTextNode("");
+          } else {
+            $text = document.createTextNode(
+              element[key][0].toUpperCase() + element[key].slice(1).toLowerCase()
+            );
+          }
+          $td.appendChild($text);
+          $tr.appendChild($td);
+        } else if (key == "telefono") {
           const $td = document.createElement("td");
           const $text = document.createTextNode(element[key]);
           $td.appendChild($text);

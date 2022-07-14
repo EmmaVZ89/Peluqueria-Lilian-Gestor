@@ -20,6 +20,7 @@ body {
   text-align: center;
   color: #000;
   text-shadow: 4px 4px 2px #ddd;
+  animation: titulo-h1 3s;
 }
 .h1-tag h1 {
   font-size: 7rem;
@@ -91,6 +92,18 @@ body {
   }
   100% {
     transform: translateX(0);
+  }
+}
+
+@keyframes titulo-h1 {
+  0% {
+    opacity: 0;
+  }
+  15% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
   }
 }
 

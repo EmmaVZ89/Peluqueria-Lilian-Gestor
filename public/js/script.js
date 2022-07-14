@@ -43,6 +43,7 @@ $btnFicha.disabled = true;
 
 // Buscador
 const $btnBuscar = document.querySelector("#btn-buscar");
+const $btnReset = document.querySelector("#btn-resetLista");
 
 // Logout
 const $btnLogOut = document.querySelector("#btn-logout");
@@ -73,8 +74,14 @@ $btnBuscar.addEventListener("click", () => {
   }
 });
 
+$btnReset.addEventListener("click", () => {
+  updateTable(listaClientes);
+  swal("¡ Cargados !", `Se cargaron todos los clientes.`, "success");
+});
+
 $btnCrear.addEventListener("click", () => {
   resetForm();
+  enableInputsCrud();
   if (!$btnForm.classList.contains("btn-primary")) {
     $btnForm.classList.add("btn-primary");
   }
@@ -83,6 +90,7 @@ $btnCrear.addEventListener("click", () => {
 });
 
 $btnModificar.addEventListener("click", () => {
+  enableInputsCrud();
   $btnForm.innerText = "Modificar";
   $btnForm.classList.remove("btn-primary");
   $btnForm.classList.add("btn-success");
@@ -91,6 +99,7 @@ $btnModificar.addEventListener("click", () => {
 });
 
 $btnDelete.addEventListener("click", () => {
+  disableInputsCrud();
   $btnForm.innerText = "Eliminar";
   $btnForm.classList.remove("btn-primary");
   $btnForm.classList.add("btn-danger");
@@ -104,6 +113,8 @@ $btnFormCancel.addEventListener("click", () => {
 });
 
 $btnFicha.addEventListener("click", () => {
+  const {fecha} = $formularioControl;
+  fecha.disabled = false;
   resetFormControls();
   document.querySelector("#dropdownMenuButton1").disabled = false;
   document.querySelector("#btn-controles-modificar").disabled = true;
@@ -154,8 +165,8 @@ $formularioCRUD.addEventListener("submit", (e) => {
   const clienteCRUD = new Cliente(
     0,
     0,
-    nombre.value,
-    apellido.value,
+    nombre.value.trim().toLowerCase(),
+    apellido.value.trim().toLowerCase(),
     telefono.value,
     observacion.value,
     fichas
@@ -280,32 +291,39 @@ $formularioControl.addEventListener("submit", (e) => {
 });
 
 $ulControl.addEventListener("click", (e) => {
+  const {fecha} = $formularioControl;
   const date = e.target.dataset.date;
-  const control = cliente.ficha.find((c) => c.fecha === date);
+  const ficha = cliente.ficha.find((c) => c.fecha === date);
   document.querySelector("#btn-controles-agregar").disabled = true;
   document.querySelector("#btn-controles-modificar").disabled = false;
   document.querySelector("#btn-controles-eliminar").disabled = false;
-  uploadControl(control);
+  fecha.disabled = true;
+  uploadControl(ficha);
 });
 // EVENTOS PANTALLA Y FORMULARIOS --------------------------------------------------------------------
 
 // CRUD CLIENTE **************************************************************************************
 
 async function getClientes() {
+  let jwt = localStorage.getItem("jwt");
+  let headers = { headers: { Authorization: "Bearer " + jwt } };
   $divSpinner.appendChild(getSpinner());
   try {
-    const { data } = await axios.get(URL + "listarClientes");
+    const { data } = await axios.get(URL + "listarClientes", headers);
     return data.dato;
   } catch (error) {
     console.error(error);
+    logOutForced();
   } finally {
     clearDivSpinner();
   }
 }
 
 async function createCliente(nuevoCliente, ficha) {
+  let jwt = localStorage.getItem("jwt");
+  let headers = { headers: { Authorization: "Bearer " + jwt } };
   try {
-    const { data } = await axios.post(URL + "agregarCliente", nuevoCliente);
+    const { data } = await axios.post(URL + "agregarCliente", nuevoCliente, headers);
     nuevoCliente.id = data.id_nuevo;
     nuevoCliente.id_ficha = data.id_nuevo;
     ficha.id = data.id_nuevo;
@@ -314,27 +332,34 @@ async function createCliente(nuevoCliente, ficha) {
     resetForm();
   } catch (error) {
     console.error(error);
+    logOutForced();
   }
 }
 
 async function updateCliente(clienteToEdit) {
+  let jwt = localStorage.getItem("jwt");
+  let headers = { headers: { Authorization: "Bearer " + jwt } };
   try {
     resetForm();
-    const { data } = await axios.post(URL + "modificarCliente", clienteToEdit);
+    const { data } = await axios.post(URL + "modificarCliente", clienteToEdit, headers);
     updateTable(listaClientes);
     return data;
   } catch (error) {
     console.error(error);
+    logOutForced();
   }
 }
 
 async function deleteCliente(id) {
+  let jwt = localStorage.getItem("jwt");
+  let headers = { headers: { Authorization: "Bearer " + jwt } };
   try {
     resetForm();
-    const { data } = await axios.post(URL + "eliminarCliente", { id: id });
+    const { data } = await axios.post(URL + "eliminarCliente", { id: id }, headers);
     updateTable(listaClientes);
   } catch (error) {
     console.error(error);
+    logOutForced();
   }
 }
 
@@ -342,30 +367,39 @@ async function deleteCliente(id) {
 
 // CRUD CONTROL **************************************************************************************
 async function createFicha(nuevaFicha) {
+  let jwt = localStorage.getItem("jwt");
+  let headers = { headers: { Authorization: "Bearer " + jwt } };
   try {
-    const { data } = await axios.post(URL + "agregarFicha", nuevaFicha);
+    const { data } = await axios.post(URL + "agregarFicha", nuevaFicha, headers);
   } catch (error) {
     console.error(error);
+    logOutForced();
   }
 }
 
 async function getFichas() {
   $divSpinner.appendChild(getSpinner());
+  let jwt = localStorage.getItem("jwt");
+  let headers = { headers: { Authorization: "Bearer " + jwt } };
   try {
-    const { data } = await axios.get(URL + "listarFichas");
+    const { data } = await axios.get(URL + "listarFichas", headers);
     return data.dato;
   } catch (error) {
     console.error(error);
+    logOutForced();
   } finally {
     clearDivSpinner();
   }
 }
 
 async function deleteFicha(ficha) {
+  let jwt = localStorage.getItem("jwt");
+  let headers = { headers: { Authorization: "Bearer " + jwt } };
   try {
-    const { data } = await axios.post(URL + "eliminarFicha", ficha);
+    const { data } = await axios.post(URL + "eliminarFicha", ficha, headers);
   } catch (error) {
     console.error(error);
+    logOutForced();
   }
 }
 
@@ -382,6 +416,7 @@ async function updateTable() {
     listaClientes = null;
     listaClientes = [...data];
     $divTable.appendChild(createTable(listaClientes));
+    paginarTabla();
   }
 }
 
@@ -400,8 +435,8 @@ function resetForm() {
 function uploadFormCRUD(cliente) {
   const { nombre, apellido, telefono, observacion, fecha, detalle } = $formularioCRUD;
 
-  nombre.value = cliente.nombre;
-  apellido.value = cliente.apellido;
+  nombre.value = cliente.nombre[0].toUpperCase() + cliente.nombre.slice(1);
+  apellido.value = cliente.apellido[0].toUpperCase() + cliente.apellido.slice(1);
   telefono.value = cliente.telefono;
   observacion.value = cliente.observacion;
   if (cliente.ficha !== undefined) {
@@ -424,8 +459,8 @@ function resetFormControls() {
 function uploadFormControl(cliente) {
   const { nombre, apellido, fecha } = $formularioControl;
 
-  nombre.value = cliente.nombre;
-  apellido.value = cliente.apellido;
+  nombre.value = cliente.nombre[0].toUpperCase() + cliente.nombre.slice(1);
+  apellido.value = cliente.apellido[0].toUpperCase() + cliente.apellido.slice(1);
   fecha.value = actualDate.toJSON().slice(0, 10);
 }
 
@@ -446,6 +481,26 @@ function resetColors() {
     i.removeAttribute("style");
   });
 }
+
+function disableInputsCrud() {
+  const { nombre, apellido, telefono, observacion, fecha, detalle } = $formularioCRUD;
+  nombre.disabled = true;
+  apellido.disabled = true;
+  telefono.disabled = true;
+  observacion.disabled = true;
+  fecha.disabled = true;
+  detalle.disabled = true;
+}
+
+function enableInputsCrud() {
+  const { nombre, apellido, telefono, observacion, fecha, detalle } = $formularioCRUD;
+  nombre.disabled = false;
+  apellido.disabled = false;
+  telefono.disabled = false;
+  observacion.disabled = false;
+  detalle.disabled = false;
+}
+
 // FUNCIONES PARA CARGA Y RESETEO DE FORMULARIOS -----------------------------------------------------
 
 function getSpinner() {
@@ -463,7 +518,7 @@ function clearDivSpinner() {
   }
 }
 
-// JWT y login***********************************************************************
+// JWT, login y logOut***********************************************************************
 function VerificarJWT() {
   var jwt = localStorage.getItem("jwt");
   $.ajax({
@@ -476,6 +531,16 @@ function VerificarJWT() {
   })
     .done(function (obj_rta) {
       if (obj_rta.exito) {
+        const foto = document.querySelector("#foto-usuario");
+        const nombre = document.querySelector("#nombre-usuario");
+        let nombreUsuario = obj_rta.payload.usuario.nombre;
+        if (nombreUsuario === "ezequiel") {
+          foto.setAttribute("src", "./assets/ezequiel2.png");
+          nombre.innerText = nombreUsuario[0].toUpperCase() + nombreUsuario.slice(1).toLowerCase();
+        } else if (nombreUsuario === "lilian") {
+          foto.setAttribute("src", "./assets/lilian1.png");
+          nombre.innerText = nombreUsuario[0].toUpperCase() + nombreUsuario.slice(1).toLowerCase();
+        }
         swal("¡ Bienvenido !", "Tu sesión esta iniciada", "success");
       } else {
         swal("¡ Inicio Fallido !", "Debes iniciar sesión para continuar", "error");
@@ -503,6 +568,14 @@ function logOut() {
   }, 2000);
 }
 
+function logOutForced() {
+  localStorage.removeItem("jwt");
+  swal("¡ Inicio Fallido !", "Debes iniciar sesión para continuar", "error");
+  setTimeout(() => {
+    $(location).attr("href", URL);
+  }, 2000);
+}
+
 // Buscador *************************************************************************
 function updateTableBuscador(listado) {
   while ($divTable.hasChildNodes()) {
@@ -510,6 +583,7 @@ function updateTableBuscador(listado) {
   }
   if (listado) {
     $divTable.appendChild(createTable(listado));
+    paginarTabla();
   }
 }
 
@@ -528,6 +602,37 @@ function searchByLastName(listado, apellido) {
 function searchByNameAndLastName(listado, nombre, apellido) {
   return listado.filter((cliente) => {
     return cliente.nombre.toLowerCase() == nombre && cliente.apellido.toLowerCase() == apellido;
+  });
+}
+
+// Paginación
+function paginarTabla() {
+  $(document).ready(function () {
+    $("#tablaClientes").DataTable({
+      language: {
+        processing: "Tratamiento en curso...",
+        search: "Buscar&nbsp;:",
+        lengthMenu: "Agrupar de _MENU_ clientes",
+        info: "Cliente _START_ al _END_ de _TOTAL_ clientes",
+        infoEmpty: "No existen datos.",
+        infoFiltered: "(filtrado de _MAX_ elementos en total)",
+        infoPostFix: "",
+        loadingRecords: "Cargando...",
+        zeroRecords: "No se encontraron datos con tu busqueda",
+        emptyTable: "No hay datos disponibles en la tabla.",
+        paginate: {
+          first: "Primero",
+          previous: "Anterior",
+          next: "Siguiente",
+          last: "Ultimo",
+        },
+        aria: {
+          sortAscending: ": active para ordenar la columna en orden ascendente",
+          sortDescending: ": active para ordenar la columna en orden descendente",
+        },
+      },
+      searching: false,
+    });
   });
 }
 

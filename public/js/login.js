@@ -8,7 +8,7 @@ animateX[0].classList.add("view-from-right");
 
 $("#btn-iniciar").on("click", (e) => {
   e.preventDefault();
-  let nombreUsuario = $("#nombreUsuario").val();
+  let nombreUsuario = $("#nombreUsuario").val().trim().toLowerCase();
   let clave = $("#clave").val();
   let dato = {};
   dato.nombreUsuario = nombreUsuario;

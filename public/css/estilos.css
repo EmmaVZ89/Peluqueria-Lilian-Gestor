@@ -22,6 +22,7 @@ body {
   text-align: center;
   color: #000;
   text-shadow: 4px 4px 2px #ddd;
+  animation: titulo-h1 3s;
 }
 .h1-tag h1 {
   font-size: 7rem;
@@ -38,6 +39,19 @@ body {
 
 ::-webkit-scrollbar {
   display: none;
+}
+
+#foto-usuario {
+  width: 2.5rem;
+  border-radius: 50%;
+  border: 2px solid gray;
+  margin-right: 1rem;
+}
+
+#nombre-usuario {
+  color: white;
+  font-weight: bold;
+  margin-right: 1rem;
 }
 
 #btn-logout:hover {
@@ -97,6 +111,14 @@ table tr:hover {
 #btn-buscar {
   width: 10rem;
   margin-top: 1rem;
+  box-shadow: 2px 2px 2px black;
+}
+
+.contenedor-reset {
+  text-align:end;
+}
+
+#btn-resetLista {
   box-shadow: 2px 2px 2px black;
 }
 
@@ -213,25 +235,26 @@ tr:nth-child(odd) {
 }
 
 tr:nth-child(even) {
-  background: rgba(95, 94, 94, 0.9);
+  background: rgba(114, 117, 119, 1);
   text-shadow: 0.5px 0.5px black;
   color: white;
 }
 
 .tr-table:hover td {
-  background-color: rgba(102, 255, 0, 0.7);
-  color: black;
+  background-color: rgba(0, 195, 255, 0.5);
+  transition: background-color 0.4s;
 }
 
 #th-table {
-  color: greenyellow;
+  color: rgb(91, 167, 238);
   text-shadow: 1px 1px rgb(66, 65, 65);
-  font-size: 0.8rem;
+  font-size: 1rem;
   text-align: center;
+  text-shadow: 1px 1px 1px black;
 }
 
 .tr-table {
-  font-size: 0.8rem;
+  font-size: 1rem;
 }
 
 .tr-table > td {
@@ -249,24 +272,12 @@ tr:nth-child(even) {
   box-shadow: 2px 2px 4px black;
 }
 
-#btnActivarDesactivar {
-  width: 100%;
-  background-color: greenyellow;
-  font-weight: bold;
-  text-shadow: 1px 1px 1px white;
-  text-align: center;
-  padding: 5px;
-  border-radius: 15px;
-  box-shadow: 2px 2px 4px white;
-  font-size: 1rem;
+.page-footer {
+  background-color: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  line-height: 25px;
 }
 
-#btnActivarDesactivar:hover {
-  background-color: red;
-  color: white;
-  text-shadow: 1px 1px 1px black;
-  transition: background-color 0.5s, color 0.5s, text-shadow 0.5s;
-}
 
 /* Animated Scroll right */
 .animated-scroll-right {
@@ -287,6 +298,18 @@ tr:nth-child(even) {
   }
 }
 
+@keyframes titulo-h1 {
+  0% {
+    opacity: 0;
+  }
+  15% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
 @media screen and (max-width: 420px) {
   .contenedor-buscador {
     width: 95%;
@@ -301,15 +324,15 @@ tr:nth-child(even) {
     width: 100%;
     justify-content: space-between;
   }
+  #tablaClientes {
+    width: 100%;
+  }
   #btn-ficha,
   #btn-crear,
   #btn-modificar,
   #btn-eliminar {
     margin-right: 2px !important;
     margin-left: 2px !important;
-  }
-  #btnActivarDesactivar {
-    font-size: 0.4rem;
   }
   .dropControl {
     text-align: left;
